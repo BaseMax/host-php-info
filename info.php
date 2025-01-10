@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,50 +63,57 @@
 <div class="container">
     <div class="header">PHP Host Information</div>
     <?php
+    /**
+     * Converts a size string (e.g., '128M') to bytes.
+     */
     function convertToBytes($size) {
         $unit = strtoupper(substr($size, -1));
         $size = (int)$size;
-        switch ($unit) {
-            case 'G': return $size * 1024 * 1024 * 1024;
-            case 'M': return $size * 1024 * 1024;
-            case 'K': return $size * 1024;
-            default: return $size;
-        }
+        $multipliers = ['K' => 1024, 'M' => 1024 ** 2, 'G' => 1024 ** 3];
+        return isset($multipliers[$unit]) ? $size * $multipliers[$unit] : $size;
     }
 
+    /**
+     * Formats a size in bytes to a human-readable format.
+     */
     function formatSize($size) {
-        if ($size >= 1024 * 1024 * 1024) return floor($size / (1024 * 1024 * 1024)) . ' GB';
-        if ($size >= 1024 * 1024) return floor($size / (1024 * 1024)) . ' MB';
+        if ($size >= 1024 ** 3) return floor($size / (1024 ** 3)) . ' GB';
+        if ($size >= 1024 ** 2) return floor($size / (1024 ** 2)) . ' MB';
         return floor($size / 1024) . ' KB';
     }
 
+    /**
+     * Displays a labeled information box.
+     */
     function displayInfo($label, $value) {
         echo "<div class='info'>{$label}: <span class='bold'>{$value}</span></div>";
     }
 
+    /**
+     * Checks if an extension is loaded and returns its version or a default message.
+     */
+    function getExtensionInfo($extensionName, $notInstalledMessage = 'Not installed') {
+        if (extension_loaded($extensionName)) {
+            return phpversion($extensionName) ?: 'Enabled';
+        }
+        return $notInstalledMessage;
+    }
+
     displayInfo('PHP Version', PHP_VERSION);
+    displayInfo('Ioncube Loader', function_exists('ioncube_loader_version') ? ioncube_loader_version() : 'Not installed');
+    displayInfo('SourceGuardian', getExtensionInfo('sourceguardian'));
 
-    if (function_exists('ioncube_loader_version')) {
-        displayInfo('Ioncube Version', ioncube_loader_version());
-    } else {
-        displayInfo('Ioncube Loader', 'Not installed');
+    $configurations = [
+        'PHP Memory Limit' => formatSize(convertToBytes(ini_get('memory_limit'))),
+        'PHP Max Execution Time' => ini_get('max_execution_time') . ' seconds',
+        'PHP Max Upload Filesize' => formatSize(convertToBytes(ini_get('upload_max_filesize')))
+    ];
+
+    foreach ($configurations as $label => $value) {
+        displayInfo($label, $value);
     }
-
-    if (extension_loaded('sourceguardian')) {
-        displayInfo('SourceGuardian Version', phpversion('sourceguardian'));
-    } else {
-        displayInfo('SourceGuardian', 'Not installed');
-    }
-
-    $memoryLimit = formatSize(convertToBytes(ini_get('memory_limit')));
-    $uploadMaxFilesize = formatSize(convertToBytes(ini_get('upload_max_filesize')));
-    $maxExecutionTime = ini_get('max_execution_time') . ' seconds';
-
-    displayInfo('PHP Memory Limit', $memoryLimit);
-    displayInfo('PHP Max Execution Time', $maxExecutionTime);
-    displayInfo('PHP Max Upload Filesize', $uploadMaxFilesize);
     ?>
 </div>
-<div class="footer">&copy; <?php echo date("Y"); ?> <a href="https://example.com" target="_blank" rel="nofollow">Your Host</a></div>
+<div class="footer">&copy; <?php echo date("Y"); ?> <a href="https://github.com/basemax" target="_blank" rel="nofollow">Max Base</a></div>
 </body>
 </html>
