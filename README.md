@@ -1,7 +1,5 @@
 # host-php-info
 
-![host-php-info](demo.jpg)
-
 **host-php-info** is a PHP script that displays detailed information about the PHP environment on your server in a clean, human-readable format. It includes essential configurations, loaded extensions, PHP settings, and other system-related data useful for debugging and system monitoring.
 
 ## Features
@@ -12,6 +10,8 @@
 - **PHP Configuration Settings**: Displays important PHP settings like memory limit, max execution time, max upload filesize, and post max size.
 - **Loaded Extensions**: Lists the loaded PHP extensions such as cURL, OpenSSL, and GD.
 - **Timezone Settings**: Displays the current PHP timezone setting.
+
+![host-php-info](demo.jpg)
 
 ## Installation
 
